@@ -1,21 +1,10 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
-import User from "./models/User.js";  // ✅ IMPORT ATTIVO
-import Contatto from './models/contattoModel.js';
-import Attivita from './models/attivitaModel.js';
-import Azienda from './models/aziendaModel.js';
-import Chats from './models/chatsModel.js';
-import Deals from './models/dealsModel.js';
-import Events from './models/eventsModel.js';
-import Messaggi from './models/messaggiModel.js';
-import News from './models/newsModel.js';
-import Progetti from './models/progettiModel.js';
-import SandboxNotes from "./models/sandboxNotesModel.js";
-import Timesheet from "./models/timesheetModel.js";
+import Reclami from "./models/reclamiModel.js";
+import Tipologiche from "./models/tipologicheModel.js";
 
 console.log("✅ SERVER JS IN ESECUZIONE DA:", process.cwd());
-console.log("✅ Model User importato:",  User);
 
 const app = express();
 app.use(cors());
@@ -32,114 +21,64 @@ debugger;
 
 import { ObjectId } from "mongodb";
 
-app.get("/api/users/:id", async (req, res) => {
-    let userId = req.params.id;
 
-    // Se è un ObjectId valido, converti
-    if (ObjectId.isValid(userId)) {
-        userId = new ObjectId(userId);
+app.post('/Reclami', async (req, res) => {
+  try {
+    console.log('BODY RICEVUTO:', req.body);
+
+    // 1️⃣ Crea e salva il documento
+    const nuovoDocumento = new Reclami(req.body);
+    const result = await nuovoDocumento.save();
+
+    console.log('ID generato da Mongoose:', result._id);
+
+    // 2️⃣ Verifica subito che il documento sia nel DB
+    const trovato = await Reclami.findById(result._id);
+    if (trovato) {
+      console.log('Documento confermato nel DB:', trovato);
+    } else {
+      console.warn('Documento NON trovato nel DB!');
     }
 
-    const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ error: "User not found" });
-
-    res.json(user);
-});
-
-// Rotta API
-app.get("/api/users", async (req, res) => {
-  try {
-    //console.log("🔥 Rotta /api/users chiamata");
-    //console.log("🔥 Tipo di User:", typeof User);
-
-    const users = await User.find().lean();
-    res.json(users);
-    console.log(users);
+    // 3️⃣ Risposta al client
+    return res.status(201).json({
+      message: 'Reclamo inserito correttamente',
+      insertedId: result._id,
+      trovato: !!trovato
+    });
 
   } catch (err) {
-    console.error("❌ Errore API:", err);
-    res.status(500).json({ error: err.message });
+    console.error('ERRORE INSERIMENTO RECLAMO:', err);
+    if (!res.headersSent) {
+      return res.status(500).json({ message: "Errore durante l’inserimento", error: err.message });
+    }
   }
 });
 
-  // Rotta test
-app.get("/", (req, res) => {
-  console.log("Server Express collegato a MongoDB!");
-  res.send("Server Express collegato a MongoDB!");
+app.get("/api/reclami/search", async (req, res) => {
+  try {
+    const { q } = req.query;
+
+    if (!q || q.trim() === "") return res.json([]);
+
+    const risultati = await Reclami.find(
+      { $text: { $search: q } },
+      { score: { $meta: "textScore" } }
+    )
+      .sort({ score: { $meta: "textScore" } })
+      .lean();
+
+    res.json(risultati);
+  } catch (err) {
+    console.error("ERRORE MONGO:", err);
+    res.status(500).json({ error: "Errore ricerca reclami" });
+  }
 });
 
-app.get("/api/contatti", async (req, res) => {
-  //const Contatto = getModel("contatti");   // il tuo modello generico
-  const data = await Contatto.find().lean();
+app.get("/api/tipologiche", async (req, res) => {
+  const data = await Tipologiche.find().lean();
   res.json(data);
 });
-
-app.get("/api/attivita", async (req, res) => {
-  //const Contatto = getModel("contatti");   // il tuo modello generico
-  const data = await Attivita.find().lean();
-  res.json(data);
-});
-
-app.get("/api/azienda", async (req, res) => {
-  //const Contatto = getModel("contatti");   // il tuo modello generico
-  const data = await Azienda.find().lean();
-  res.json(data);
-});
-
-app.get("/api/chats", async (req, res) => {
-  const data = await Chats.find().lean();
-  res.json(data);
-});
-
-app.get("/api/deals", async (req, res) => {
-  const data = await Deals.find().lean();
-  res.json(data);
-});
-
-app.get("/api/events", async (req, res) => {
-  const data = await Events.find().lean();
-  res.json(data);
-});
-
-app.get("/api/messaggi", async (req, res) => {
-  const data = await Messaggi.find().lean();
-  res.json(data);
-});
-
-app.get("/api/news", async (req, res) => {
-  const data = await News.find().lean();
-  res.json(data);
-});
-
-app.get("/api/progetti", async (req, res) => {
-  const data = await Progetti.find().lean();
-  res.json(data);
-});
-
-app.get("/api/sandboxNotes", async (req, res) => {
-  const data = await SandboxNotes.find().lean();
-  res.json(data);
-});
-
-app.get("/api/timesheet", async (req, res) => {
-  const data = await Timesheet.find().lean();
-  res.json(data);
-});
-
-app.get("/api/timesheet/:id", async (req, res) => {
-    let timesheetId = req.params.id;
-
-    // Se è un ObjectId valido, converti
-    if (ObjectId.isValid(timesheetId)) {
-        userId = new ObjectId(timesheetId);
-    }
-
-    const data = await User.findById(timesheetId);
-    if (!data) return res.status(404).json({ error: "timesheet not found" });
-
-    res.json(data);
-});
-
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server avviato su http://localhost:${PORT}`));

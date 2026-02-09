@@ -1,8 +1,9 @@
 {
-  "name": "app007",
+  "name": "Monte002",
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "homepage": "https://abmontefusco-creator.github.io/Monte002",
   "scripts": {
     "start": "node server/server.js",
     "start:dev": "concurrently \"npm run server\" \"npm run client\"",
@@ -15,6 +16,10 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.7",
+    "@mui/material": "^7.3.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
@@ -24,7 +29,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-i18next": "^13.0.0",
-    "recharts": "^2.6.2"
+    "recharts": "^2.6.2",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.4",
