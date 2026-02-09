@@ -14,9 +14,9 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { v4 as uuidv4 } from 'uuid';
-import PersonaGiuridica from './PersonaGiuridica';
 import PersonaFisica from './PersonaFisica';
 import DettaglioReclamo from './DettaglioReclamo';
+import PersonaGiuridica from './PersonaGiuridica';
 
 function ClaimForm() {
   const [open, setOpen] = useState(false);
@@ -31,6 +31,11 @@ function ClaimForm() {
     argomento: '',
     subArgomento: '',
     oggettoClaim: '',
+    sMCAnno: '',
+    contrattoFornitura:'',
+    reclamo:'',
+    tipologiaContratto: '',
+    tipologiaFornitura: '',
     personaFisica: [{ id: uuidv4(), 
                       ruoloPersonaFisica: '',
                       tipoDocIdenità: '', pec: '', nome: '' }],
@@ -43,7 +48,7 @@ function ClaimForm() {
   useEffect(() => {
     const fetchTipologiche = async () => {
       try {
-        const response = await fetch('https://monte001.onrender.com/api/tipologiche');
+        const response = await fetch('https://percipio001.onrender.com/api/tipologiche');
         const data = await response.json();
         console.log(data);
         // Trasforma in oggetto per accesso veloce
@@ -99,7 +104,7 @@ function ClaimForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://percipio001.onrender.com/Reclami', {
+      const response = await fetch('https://percipio001.onrender.comcd server/Reclami', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
