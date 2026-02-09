@@ -99,7 +99,7 @@ function ClaimForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/Reclami', {
+      const response = await fetch('https://percipio001.onrender.com/Reclami', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),

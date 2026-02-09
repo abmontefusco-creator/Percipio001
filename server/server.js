@@ -7,7 +7,11 @@ import Tipologiche from "./models/tipologicheModel.js";
 console.log("✅ SERVER JS IN ESECUZIONE DA:", process.cwd());
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: '*',            // tutte le origini
+  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 app.use(express.json());
 
 // Connessione a MongoDB
