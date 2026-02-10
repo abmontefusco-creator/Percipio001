@@ -3,11 +3,12 @@ import mongoose from "mongoose";
 import cors from "cors";
 import Reclami from "./models/reclamiModel.js";
 import Tipologiche from "./models/tipologicheModel.js";
+import ARERA from "./models/areraModel.js";
 
 console.log("✅ SERVER JS IN ESECUZIONE DA:", process.cwd());
 
 const app = express();
-app.options('*', cors()); // permette tutte le preflight requests
+app.use(cors());
 app.use(express.json());
 
 // Connessione a MongoDB
