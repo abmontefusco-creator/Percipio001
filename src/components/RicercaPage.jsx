@@ -11,12 +11,11 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-function RicercaPage() {
+function RicercaPage({setActivePage ,setSelectedRow} ) {
   const [query, setQuery] = useState("");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
 
   const handleView = (row) => {
     console.log("Visualizza dettaglio:", row);
@@ -65,7 +64,10 @@ function RicercaPage() {
           {/* Visualizzazione dettaglio */}
           <VisibilityIcon
             style={{ cursor: "pointer" }}
-            onClick={() => handleView(params.row)}
+            onClick={() => {
+              setSelectedRow(params.row); // opzionale, se vuoi passare dati
+              setActivePage("gestione-processo");
+            }}
           />
 
           {/* Download */}

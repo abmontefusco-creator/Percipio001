@@ -80,5 +80,10 @@ app.get("/api/tipologiche", async (req, res) => {
   res.json(data);
 });
 
+app.get("/api/arera", async (req, res) => {
+  const data = await ARERA.find().lean();
+  res.json(data);
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server avviato su http://localhost:${PORT}`));

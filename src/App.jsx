@@ -7,6 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Typography from "@mui/material/Typography";
 import LeftDrawerMenu from "./components/LeftDrawerMenu";
+import GestioneProcesso from './components/processi/GestioneProcesso';
 
 function InserimentoClaim() { 
   return <div>Inserimento Claim</div>; 
@@ -21,7 +22,8 @@ function Contatti() {
 export default function App() {
   const [activePage, setActivePage] = React.useState("claim");
   const [open, setOpen] = React.useState(false);
-  
+  const [selectedRow, setSelectedRow] = useState(null);
+
   const handleNavigate = (path) => {
     setActivePage(path);
     setOpen(false);
@@ -30,9 +32,11 @@ export default function App() {
   const renderPage = () => {
     switch (activePage) {
       case "ricerca":
-        return <RicercaPage />;
+        return <RicercaPage setActivePage={setActivePage} setSelectedRow={setSelectedRow} />;
       case "contatti":
         return <ContattiPage />;
+      case "gestione-processo":
+        return <GestioneProcesso setSelectedRow={setSelectedRow}/>;
       default:
         return <ClaimForm />;
     }

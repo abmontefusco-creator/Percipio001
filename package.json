@@ -1,9 +1,9 @@
 {
-  "name": "Monte002",
+  "name": "Percipio001",
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "homepage": "https://abmontefusco-creator.github.io/Monte002",
+  "homepage": "https://abmontefusco-creator.github.io/Percipio001",
   "scripts": {
     "start": "node server/server.js",
     "start:dev": "concurrently \"npm run server\" \"npm run client\"",
