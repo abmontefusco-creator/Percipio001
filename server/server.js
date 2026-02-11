@@ -21,6 +21,7 @@ console.log('Checkpoint'); // per vedere se il server arriva lì
 debugger;
 
 import { ObjectId } from "mongodb";
+import ReclamiArera from "./models/ReclamoArera.js";
 
 
 app.post('/Reclami', async (req, res) => {
@@ -54,6 +55,26 @@ app.post('/Reclami', async (req, res) => {
       return res.status(500).json({ message: "Errore durante l’inserimento", error: err.message });
     }
   }
+});
+
+
+app.get('/reclamiArera/:numReclamo', async (req, res) => {
+    try {
+        const numReclamo = parseInt(req.params.numReclamo, 10);
+
+        const reclamo = await ReclamiArera.findOne({
+            NumReclamo : numReclamo
+        });
+
+        if (!reclamo) {
+            return res.status(404).json({ message: 'Reclamo non trovato ' + numReclamo });
+        }
+
+        res.json(reclamo);
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 app.get("/api/reclami/search", async (req, res) => {
