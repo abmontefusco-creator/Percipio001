@@ -5,6 +5,8 @@ import {
   Tab,
   Typography
 } from "@mui/material";
+import ProfilazioneARERA from "./Profilazione Dossier/ProfilazioneARERA";
+import ProfilazioneRischi from "./Profilazione Dossier/ProfilazioneRischi";
 
 // Helper TabPanel (pattern MUI standard)
 function TabPanel(props) {
@@ -23,6 +25,7 @@ function TabPanel(props) {
 
 function ProfilazioneDossier({row}) {
   const [tabIndex, setTabIndex] = useState(0);
+  const numReclamoPar = 1055;
 
   const handleChange = (_, newValue) => {
     setTabIndex(newValue);
@@ -53,7 +56,7 @@ function ProfilazioneDossier({row}) {
 
       {/* Contenuti Tab */}
       <TabPanel value={tabIndex} index={0}>
-        <Typography>Contenuto Profilazione ARERA</Typography>
+        <ProfilazioneARERA numReclamo={numReclamoPar}/>
       </TabPanel>
 
       <TabPanel value={tabIndex} index={1}>
@@ -65,7 +68,7 @@ function ProfilazioneDossier({row}) {
       </TabPanel>
 
       <TabPanel value={tabIndex} index={3}>
-        <Typography>Contenuto Profilazione Rischi</Typography>
+        <ProfilazioneRischi rows={row}/>
       </TabPanel>
 
       <TabPanel value={tabIndex} index={4}>

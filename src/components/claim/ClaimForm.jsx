@@ -20,9 +20,11 @@ import PersonaGiuridica from './PersonaGiuridica';
 
 function ClaimForm() {
   const [open, setOpen] = useState(false);
-
   const [tipologiche, setTipologiche] = useState({});
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState({
+    _id: null,
     clienteFinale: '',
     provenienzaClaim: '',
     settore: '',
@@ -37,8 +39,11 @@ function ClaimForm() {
     tipologiaContratto: '',
     tipologiaFornitura: '',
     personaFisica: [{ id: uuidv4(), 
+                      codiceFiscale: '',
+                      nome: '',
+                      cognome: '',
                       ruoloPersonaFisica: '',
-                      tipoDocIdenità: '', pec: '', nome: '' }],
+                      tipoDocIdenità: '', pec: '' }],
     personaGiuridica: [{id: uuidv4(), 
                         ruoloPersonaGiuridica: '',
                         pec: '', nome: '' }],
@@ -103,17 +108,39 @@ function ClaimForm() {
   // Invia al backend
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      const response = await fetch('https://percipio001.onrender.comcd server/Reclami', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-      const data = await response.json();
-      console.log('Documento inserito con ID:', data.insertedId);
-      
-    } catch (error) {
-      console.error('Errore inserimento documento:', error);
+      const isUpdate = !!form._id;
+      const url = isUpdate
+        ? `https://percipio001.onrender.com/Reclami/${form._id}`
+        : 'https://percipio001.onrender.com/Reclami';
+
+      const method = isUpdate ? 'PUT' : 'POST';
+
+      try {
+        const response = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(form),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (isUpdate) {
+          console.log('Documento aggiornato:', data);
+        } else {
+          console.log('Documento inserito con ID:', data.insertedId);
+        }
+
+      } catch (error) {
+        console.error('Errore salvataggio documento:', error);
+      }
+    } finally {
+    setLoading(false);
     }
   };
 

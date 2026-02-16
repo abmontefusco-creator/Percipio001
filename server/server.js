@@ -57,6 +57,17 @@ app.post('/Reclami', async (req, res) => {
   }
 });
 
+app.put('/Reclami/:id', async (req, res) => {
+  const { id } = req.params;
+
+  const result = await collection.updateOne(
+    { _id: new ObjectId(id) },
+    { $set: req.body }
+  );
+
+  res.json(result);
+});
+
 
 app.get('/reclamiArera/:numReclamo', async (req, res) => {
     try {

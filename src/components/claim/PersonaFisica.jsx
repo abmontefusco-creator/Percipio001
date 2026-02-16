@@ -15,18 +15,33 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 function PersonaFisica({ form, setForm, tipologiche, handlePersonaChange }) {
 
+
   const handlePersonaFisicaChange = (id, e) => {
     const { name, value } = e.target;
 
-    const persone = form.personaFisica.map(p =>
+    setForm(prev => ({
+      ...prev,
+      personaFisica: prev.personaFisica.map(p =>
+        p.id === id
+          ? { ...p, [name]: value }   // ← fondamentale lo spread
+          : p
+      )
+    }));
+  };
+ 
+  /* const handlePersonaFisicaChange = (id, e) => {
+    const { name, value } = e.target;
+
+    const persona = form.personaFisica.map(p =>
       p.id === id ? { ...p, [name]: value } : p
+
     );
 
     setForm({
       ...form,
       personaFisica: persona
     });
-  };
+  }; */
 
   const aggiungiPersonaFisica = () => {
     setForm({
@@ -66,22 +81,22 @@ function PersonaFisica({ form, setForm, tipologiche, handlePersonaChange }) {
                 <TextField
                   label="Codice Fiscale"
                   name="codiceFiscale"
-                  value={persona.codiceFiscale}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  value={persona.codiceFiscale || ''}
+                  onChange={(e) => handlePersonaFisicaChange(persona.id, e)}
                   fullWidth
                 />
                 <TextField
                   label="Nome"
                   name="nome"
-                  value={persona.nome}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  value={persona.nome || ''}
+                  onChange={(e) => handlePersonaFisicaChange(persona.id, e)}
                   fullWidth
                 />
                 <TextField
                   label="Cognome"
                   name="cognome"
                   value={persona.cognome}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(persona.id, e)}
                   fullWidth
                 />
 
@@ -90,7 +105,7 @@ function PersonaFisica({ form, setForm, tipologiche, handlePersonaChange }) {
                     <Select
                     name="ruoloPersonaFisica"
                     value={persona.ruoloPersonaFisica}
-                    onChange={handlePersonaChange}
+                    onChange={handlePersonaFisicaChange}
                     label="ruoloPersonaFisica"
                     >
                     <MenuItem value="">
@@ -117,7 +132,7 @@ function PersonaFisica({ form, setForm, tipologiche, handlePersonaChange }) {
                     <Select
                     name="tipoDocIdenità"
                     value={persona.tipoDocIdenità}
-                    onChange={handlePersonaChange}
+                    onChange={handlePersonaFisicaChange}
                     label="tipoDocIdenità"
                     >
                     <MenuItem value="">
@@ -134,28 +149,28 @@ function PersonaFisica({ form, setForm, tipologiche, handlePersonaChange }) {
                   label="Documento Identità/Patente N°"
                   name="Documento Identità/Patente N°"
                   value={persona.docIdentità}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
                 <TextField
                   label="Scadenza Doc Identità"
                   name="Scadenza Doc Identità"
                   value={persona.scadenzaDocIdentità}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
                 <TextField
                   label="Rilascio Doc Identità"
                   name="Rilascio Doc Identità"
                   value={persona.rilascioDocIdentità}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
                 <TextField
                   label="Ente Rilascio Doc Identità"
                   name="Ente Rilascio Doc Identità"
                   value={persona.enteRilascioDocIdentità}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
               </Box>
@@ -172,49 +187,49 @@ function PersonaFisica({ form, setForm, tipologiche, handlePersonaChange }) {
                   label="Comune di Nascita"
                   name="Comune di Nascita"
                   value={persona.comuneNascita}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
                 <TextField
                   label="Data di Nascita"
                   name="Data di Nascita"
                   value={persona.dataNascita}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
               <TextField
                   label="Città di Residenza"
                   name="Città di Residenza"
                   value={persona.cittàResidenza}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
               <TextField
                   label="Stato di Residenza"
                   name="Stato di Residenza"
                   value={persona.statoResidenza}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
               <TextField
                   label="Indirizzo"
                   name="Indirizzo"
                   value={persona.indirizzo}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
               <TextField
                   label="Civico"
                   name="Civico"
                   value={persona.civico}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
               <TextField
                   label="Provincia"
                   name="Provincia"
                   value={persona.provincia}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
               </Box>
@@ -229,28 +244,28 @@ function PersonaFisica({ form, setForm, tipologiche, handlePersonaChange }) {
                   label="Telefono"
                   name="Telefono"
                   value={persona.telefono}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
               <TextField
                   label="Cellulare"
                   name="Cellulare"
                   value={persona.cellulare}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
               <TextField
                   label="eMail Ufficiale"
                   name="eMail Ufficiale"
                   value={persona.eMailUfficiale}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
               <TextField
                   label="PEC"
                   name="PEC"
                   value={persona.pec}
-                  onChange={(e) => handlePersonaChange(index, e)}
+                  onChange={(e) => handlePersonaFisicaChange(index, e)}
                   fullWidth
                 />
               </Box> 
