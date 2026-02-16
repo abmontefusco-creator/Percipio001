@@ -4,29 +4,23 @@ import {
   TableHead, TableRow, Paper
 } from "@mui/material";
 
-const ProfilazioneRischi = ({ numReclamo }) => {
-  const [rows, setRows] = useState([]);
 
-  useEffect(() => {
-    if (!numReclamo) return;
+const ProfilazioneRischi = ({ rows, reclamiAreraNomi }) => {
 
-    fetch(`http://localhost:5000/reclamiArera/${numReclamo}`)
-      .then(res => res.json())
-      .then(data => {
-        const lista = data.arera || data.areraCompleta || [];
-        setRows(lista);
-      })
-      .catch(err => console.error(err));
-
-  }, [numReclamo]);
-
-  // Se non ci sono dati
   if (!rows || rows.length === 0) {
     return <div>Nessun dato disponibile</div>;
   }
 
-  // 🔹 Prendo le chiavi dal primo oggetto
-  const headers = Object.keys(rows[0]);
+  // 🔹 filtro per nome presente nell'array
+  const filteredRows = rows.filter(row =>
+    reclamiAreraNomi.includes(row.nome)
+  );
+
+  if (filteredRows.length === 0) {
+    return <div>Nessun documento selezionato</div>;
+  }
+
+  const headers = Object.keys(filteredRows[0]);
 
   return (
     <TableContainer component={Paper} sx={{ maxWidth: "90%", margin: "20px auto" }}>
@@ -58,5 +52,6 @@ const ProfilazioneRischi = ({ numReclamo }) => {
     </TableContainer>
   );
 };
+
 
 export default ProfilazioneRischi;
