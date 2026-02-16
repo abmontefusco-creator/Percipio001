@@ -11,7 +11,7 @@ const ProfilazioneARERA = ({numReclamo}) => {
   // fetch dati dal backend
   useEffect(() => {
      if (!numReclamo) return; // evita chiamate inutili
-     fetch(`http://localhost:5000/reclamiArera/${numReclamo}`)
+     fetch(`https://percipio001.onrender.com/reclamiArera/${numReclamo}`)
       .then(res => res.json())
       .then(data => {
         // supponendo che il JSON sia { areraCompleta: [...] }
