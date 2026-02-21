@@ -22,6 +22,7 @@ debugger;
 
 import { ObjectId } from "mongodb";
 import ReclamiArera from "./models/ReclamoArera.js";
+import File from "./models/fileModel.js";
 
 
 app.post('/Reclami', async (req, res) => {
@@ -68,6 +69,22 @@ app.put('/Reclami/:id', async (req, res) => {
   res.json(result);
 });
 
+
+app.get("/api/file/:tipoFile", async (req, res) => {
+  try {
+    const tipoFile = req.params.tipoFile;
+
+    const listaFile = await File.find({
+      tipo: tipoFile
+    }).lean();
+
+    res.json(listaFile);
+
+  } catch (error) {
+    console.error("Errore recupero file:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 app.get('/reclamiArera/:numReclamo', async (req, res) => {
     try {
@@ -118,5 +135,8 @@ app.get("/api/arera", async (req, res) => {
   res.json(data);
 });
 
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server avviato su http://localhost:${PORT}`));
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server realmente in ascolto sulla porta ${PORT}`);
+});
