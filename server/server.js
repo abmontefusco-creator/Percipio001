@@ -23,6 +23,7 @@ debugger;
 import { ObjectId } from "mongodb";
 import ReclamiArera from "./models/ReclamoArera.js";
 import File from "./models/fileModel.js";
+import ReclamiLettere from "./models/ReclamoLettere.js";
 
 
 app.post('/Reclami', async (req, res) => {
@@ -85,6 +86,26 @@ app.get("/api/file/:tipoFile", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+app.get('/reclamiLettere/:numReclamo', async (req, res) => {
+    try {
+        const numReclamo = parseInt(req.params.numReclamo, 10);
+
+        const reclamo = await ReclamiLettere.findOne({
+            NumReclamo : numReclamo
+        });
+
+        if (!reclamo) {
+            return res.status(404).json({ message: 'Reclamo non trovato ' + numReclamo });
+        }
+
+        res.json(reclamo);
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 app.get('/reclamiArera/:numReclamo', async (req, res) => {
     try {

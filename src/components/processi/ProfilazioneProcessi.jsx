@@ -7,6 +7,7 @@ import {
 } from "@mui/material";
 import ProfilazioneARERA from "./Profilazione Dossier/ProfilazioneARERA";
 import ProfilazioneRischi from "./Profilazione Dossier/ProfilazioneRischi";
+import ProfilazioneLettere from "./Profilazione Dossier/ProfilazioneLettere";
 
 // Helper TabPanel (pattern MUI standard)
 function TabPanel(props) {
@@ -60,7 +61,7 @@ function ProfilazioneDossier({row}) {
       </TabPanel>
 
       <TabPanel value={tabIndex} index={1}>
-        <Typography>Contenuto Configurazione Lettere</Typography>
+        <ProfilazioneLettere  numReclamo={numReclamoPar}/>
       </TabPanel>
 
       <TabPanel value={tabIndex} index={2}>
