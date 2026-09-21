@@ -65,7 +65,7 @@ function RicercaPage({setActivePage ,setSelectedRow} ) {
           <VisibilityIcon
             style={{ cursor: "pointer" }}
             onClick={() => {
-              setSelectedRow(params.row); // opzionale, se vuoi passare dati
+              setSelectedRow(params.row);
               setActivePage("gestione-processo");
             }}
           />

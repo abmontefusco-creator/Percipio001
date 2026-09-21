@@ -5,9 +5,8 @@ import {
   Tab,
   Typography
 } from "@mui/material";
-import ProfilazioneARERA from "./Profilazione Dossier/ProfilazioneARERA";
-import ProfilazioneRischi from "./Profilazione Dossier/ProfilazioneRischi";
-import ProfilazioneLettere from "./Profilazione Dossier/ProfilazioneLettere";
+import MostraLista from "./Profilazione Dossier/MostraListaGenerica";
+
 
 // Helper TabPanel (pattern MUI standard)
 function TabPanel(props) {
@@ -26,7 +25,9 @@ function TabPanel(props) {
 
 function ProfilazioneDossier({row}) {
   const [tabIndex, setTabIndex] = useState(0);
-  const numReclamoPar = 1055;
+  console.log("ROW ProfilazioneDossier:", row);
+
+  const numReclamoPar = row.NumReclamo;
 
   const handleChange = (_, newValue) => {
     setTabIndex(newValue);
@@ -57,11 +58,20 @@ function ProfilazioneDossier({row}) {
 
       {/* Contenuti Tab */}
       <TabPanel value={tabIndex} index={0}>
-        <ProfilazioneARERA numReclamo={numReclamoPar}/>
+        <MostraLista
+          numReclamo={numReclamoPar}
+          nomeArray="ProfilazioneARERA"
+          nomeQuery="reclamiArera"
+        />
+        
       </TabPanel>
 
       <TabPanel value={tabIndex} index={1}>
-        <ProfilazioneLettere  numReclamo={numReclamoPar}/>
+        <MostraLista
+          numReclamo={numReclamoPar}
+          nomeArray="profilazioneLettere"
+          nomeQuery="reclamiLettere"
+        />
       </TabPanel>
 
       <TabPanel value={tabIndex} index={2}>
@@ -69,7 +79,11 @@ function ProfilazioneDossier({row}) {
       </TabPanel>
 
       <TabPanel value={tabIndex} index={3}>
-        <ProfilazioneRischi rows={row}/>
+        <MostraLista
+          numReclamo={numReclamoPar}
+          nomeArray="profilazioneRischi"
+          nomeQuery="reclamiRischi"
+        />
       </TabPanel>
 
       <TabPanel value={tabIndex} index={4}>

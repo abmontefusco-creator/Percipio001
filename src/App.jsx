@@ -36,7 +36,12 @@ export default function App() {
       case "contatti":
         return <ContattiPage />;
       case "gestione-processo":
-        return <GestioneProcesso setSelectedRow={setSelectedRow}/>;
+        return (
+          <GestioneProcesso
+            row={selectedRow}
+            setSelectedRow={setSelectedRow}
+          />
+        );
       default:
         return <ClaimForm />;
     }
@@ -54,7 +59,7 @@ export default function App() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6">Gestione Claim</Typography>
+          <Typography variant="h6">Gestione Claim Numero Reclamo {selectedRow?.NumReclamo && ` - ${selectedRow.NumReclamo}`}</Typography>
         </Toolbar>
       </AppBar>
 

@@ -26,6 +26,7 @@ function TabPanel(props) {
 
 export default function GestioneProcesso({row}) {
   const [tabIndex, setTabIndex] = useState(0);
+  console.log("ROW:", row);
 
   const handleChange = (_, newValue) => {
     setTabIndex(newValue);
