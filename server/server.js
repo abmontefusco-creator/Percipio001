@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 import cors from "cors";
 import Reclami from "./models/reclamiModel.js";
 import Tipologiche from "./models/tipologicheModel.js";
-import listaArera from "./models/listaAreraModel.js";
-import listaLettere from "./models/listaLettereModel.js";
+//import listaArera from "./models/listaAreraModel.js";
+//import listaLettere from "./models/listaLettereModel.js";
 import { ObjectId } from "mongodb";
 import File from "./models/fileModel.js";
 import ReclamiArera from "./models/ReclamoArera.js";
@@ -446,7 +446,7 @@ app.get('/reclamiRischi/:NumReclamo', async (req, res) => {
         });
 
         console.log("RISULTATO:", reclamo);
-        
+
         if (!reclamo) {
             return res.status(404).json({ message: 'Reclamo non trovato ' + NumReclamo });
         }
