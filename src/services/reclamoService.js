@@ -9,7 +9,6 @@ const aggiornaCampoReclamo = async ({
     rowKey,
     rowData
 }) => {
-    console.log(`${API_URL}/api/reclami/${numReclamo}`);
     const response = await fetch(
         `${API_URL}/api/reclami/${numReclamo}`,
         {

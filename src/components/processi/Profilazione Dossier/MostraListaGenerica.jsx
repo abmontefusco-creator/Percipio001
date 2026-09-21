@@ -18,15 +18,11 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 const MostraLista = ({ numReclamo, nomeArray, nomeQuery }) => {
 
-  /*
-   * ============================================================
-   * AUTOSAVE
-   * ============================================================
-   */
   const {
-    isSaving,
-    isSaved,
-    errors
+      updateField,
+      isSaving,
+      isSaved,
+      errors
   } = useReclamoAutoSave(numReclamo);
 
   /*
@@ -47,6 +43,7 @@ const MostraLista = ({ numReclamo, nomeArray, nomeQuery }) => {
       try {
         setLoading(true);
         const url = `${API_URL}/${nomeQuery}/${numReclamo}`;
+        console.log(url);
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(
@@ -184,7 +181,7 @@ const MostraLista = ({ numReclamo, nomeArray, nomeQuery }) => {
 
             const errorRow =
               errors[
-                `lista.${item.nome}.presente`
+                `${nomeArray}.${item.nome}.presente`
               ];
 
             return (
@@ -218,6 +215,11 @@ const MostraLista = ({ numReclamo, nomeArray, nomeQuery }) => {
                           rowKey={item.nome}
                           field="presente"
                           rowData={item}
+
+                          updateField={updateField}
+                          isSaving={isSaving}
+                          isSaved={isSaved}
+                          errors={errors}
                         />
 
                       </TableCell>

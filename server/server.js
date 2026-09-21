@@ -79,7 +79,7 @@ app.patch("/api/reclami/:NumReclamo", async (req, res) => {
                 {$set: {
                         [field]: value
                     }});
-
+                
 
             if (result.matchedCount === 0) {
                 return res.status(404).json({
@@ -98,7 +98,6 @@ app.patch("/api/reclami/:NumReclamo", async (req, res) => {
             });
 
         }
-
 
         /*
          * =====================================================
@@ -232,7 +231,7 @@ app.patch("/api/reclami/:NumReclamo", async (req, res) => {
          */
 
         if (elementIndex !== -1) {
-
+console.log("===== PATCH RECLAMO =====add");
             const result = await Reclami.updateOne(
                 {
                     NumReclamo:  Number(NumReclamo)
@@ -243,7 +242,6 @@ app.patch("/api/reclami/:NumReclamo", async (req, res) => {
                     }
                 }
             );
-
 
             return res.json({
 
@@ -434,18 +432,10 @@ app.get('/reclamiLettere/:NumReclamo', async (req, res) => {
 
 app.get('/reclamiRischi/:NumReclamo', async (req, res) => {
     try {
-        console.log("PARAMETRO:", req.params.NumReclamo);
-
         const NumReclamo = parseInt(req.params.NumReclamo, 10);
-
-        console.log("NUMERO:", NumReclamo);
-        console.log("MODELLO:", ReclamiRischi);
-
         const reclamo = await ReclamiRischi.findOne({
             NumReclamo: NumReclamo
         });
-
-        console.log("RISULTATO:", reclamo);
 
         if (!reclamo) {
             return res.status(404).json({ message: 'Reclamo non trovato ' + NumReclamo });

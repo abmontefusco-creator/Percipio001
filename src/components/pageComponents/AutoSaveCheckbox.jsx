@@ -1,43 +1,31 @@
 import React, { useState } from "react";
+
 import {
     Checkbox,
     CircularProgress
 } from "@mui/material";
 
-import useReclamoAutoSave from "../../hooks/useReclamoAutoSave";
 
 const AutoSaveCheckbox = ({
     numReclamo,
-
-    /*
-     * Valore iniziale della checkbox
-     */
     initialChecked = false,
 
-    /*
-     * Informazioni necessarie per identificare
-     * il dato da aggiornare
-     */
     array,
     rowKeyField,
     rowKey,
     field,
-    rowData
+    rowData,
+
+    updateField,
+    isSaving,
+    isSaved,
+    errors
 }) => {
-
+    
     /*
-     * Hook autosave
-     */
-    const {
-        updateField,
-        isSaving,
-        isSaved,
-        errors
-    } = useReclamoAutoSave(numReclamo);
-
-
-    /*
-     * Stato locale della checkbox
+     * ============================================================
+     * STATO LOCALE
+     * ============================================================
      */
     const [checked, setChecked] = useState(
         initialChecked
@@ -45,14 +33,18 @@ const AutoSaveCheckbox = ({
 
 
     /*
-     * Chiave univoca dell'operazione.
+     * ============================================================
+     * CHIAVE OPERAZIONE
+     * ============================================================
      */
     const operationKey =
         `${array}.${rowKey}.${field}`;
 
 
     /*
-     * Stato autosave della specifica checkbox.
+     * ============================================================
+     * STATO AUTOSAVE
+     * ============================================================
      */
     const saving = isSaving({
         array,
@@ -67,6 +59,7 @@ const AutoSaveCheckbox = ({
     });
 
     const error = errors[operationKey];
+
 
 
     /*
@@ -96,22 +89,23 @@ const AutoSaveCheckbox = ({
 
 
         try {
-
+console.log("AUTOSAVE → INVIO:", {
+  array,
+  rowKeyField,
+  rowKey,
+  field,
+  value: newChecked ? 1 : 0,
+  rowData
+});
             /*
              * Autosave sul backend.
              */
             const result = await updateField({
-
                 array,
-
                 rowKeyField,
-
                 rowKey,
-
                 field,
-
                 value: newChecked ? 1 : 0,
-
                 rowData
 
             });

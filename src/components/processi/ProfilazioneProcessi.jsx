@@ -60,7 +60,7 @@ function ProfilazioneDossier({row}) {
       <TabPanel value={tabIndex} index={0}>
         <MostraLista
           numReclamo={numReclamoPar}
-          nomeArray="ProfilazioneARERA"
+          nomeArray="profilazioneARERA"
           nomeQuery="reclamiArera"
         />
         
