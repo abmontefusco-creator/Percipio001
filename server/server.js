@@ -7,11 +7,11 @@ import Tipologiche from "./models/tipologicheModel.js";
 //import listaLettere from "./models/listaLettereModel.js";
 import { ObjectId } from "mongodb";
 import File from "./models/fileModel.js";
-import ReclamiArera from "./models/ReclamoArera.js";
-import ReclamiLettere from "./models/ReclamoLettere.js";
-import ReclamiRischi from "./models/ReclamoRischi.js";
-
-
+//import ReclamiArera from "./models/ReclamoArera.js";
+//import ReclamiLettere from "./models/ReclamoLettere.js";
+//import ReclamiRischi from "./models/ReclamoRischi.js";
+//import ReclamiCheckRischi from "./models/ReclamoCheckRischi.js";
+import {getViewModel} from "./models/createViewModel.js";
 
 console.log("✅ SERVER JS IN ESECUZIONE DA:", process.cwd());
 
@@ -30,14 +30,15 @@ debugger;
 
 
 app.patch("/api/reclami/:NumReclamo", async (req, res) => {
+
     try {
+
         const { NumReclamo } = req.params;
+
         const {
             field,
             value,
             array,
-            rowKeyField,
-            rowKey,
             rowData
         } = req.body;
 
@@ -74,23 +75,35 @@ app.patch("/api/reclami/:NumReclamo", async (req, res) => {
          */
 
         if (!array) {
+
             const result = await Reclami.updateOne(
-                {NumReclamo:  Number(NumReclamo)},
-                {$set: {
+                {
+                    NumReclamo: Number(NumReclamo)
+                },
+                {
+                    $set: {
                         [field]: value
-                    }});
-                
+                    }
+                }
+            );
+
 
             if (result.matchedCount === 0) {
+
                 return res.status(404).json({
                     ok: false,
                     error: `Reclamo ${NumReclamo} non trovato`
                 });
+
             }
 
+
             return res.json({
+
                 ok: true,
+
                 operation: "update-field",
+
                 matchedCount: result.matchedCount,
 
                 modifiedCount: result.modifiedCount
@@ -99,29 +112,94 @@ app.patch("/api/reclami/:NumReclamo", async (req, res) => {
 
         }
 
+
         /*
          * =====================================================
          * VALIDAZIONE ARRAY
          * =====================================================
          */
 
-        if (!rowKeyField) {
+        if (!rowData || typeof rowData !== "object") {
+
             return res.status(400).json({
                 ok: false,
-                error: "Per un array è necessario rowKeyField"
+                error: "Per un array è necessario rowData"
             });
 
         }
 
 
-        if (rowKey === undefined || rowKey === null) {
+        /*
+         * =====================================================
+         * COSTRUZIONE DELLA CHIAVE
+         *
+         * La chiave è composta da TUTTI i campi
+         * di rowData TRANNE field.
+         *
+         * Esempio:
+         *
+         * rowData:
+         *
+         * {
+         *   nome: "Morosità e Sospensione",
+         *   codice: "MOR",
+         *   presente: 1
+         * }
+         *
+         * field:
+         *
+         * "presente"
+         *
+         * chiave:
+         *
+         * {
+         *   nome: "Morosità e Sospensione",
+         *   codice: "MOR"
+         * }
+         * =====================================================
+         */
 
-            return res.status(400).json({
-                ok: false,
-                error: "Per un array è necessario rowKey"
-            });
+        const rowKey = Object.fromEntries(
 
-        }
+            Object.entries(rowData)
+                .filter(([key]) => key !== field)
+
+        );
+
+
+        console.log(
+            "===== PATCH RECLAMO ====="
+        );
+
+        console.log(
+            "NumReclamo:",
+            NumReclamo
+        );
+
+        console.log(
+            "array:",
+            array
+        );
+
+        console.log(
+            "field:",
+            field
+        );
+
+        console.log(
+            "value:",
+            value
+        );
+
+        console.log(
+            "rowData:",
+            JSON.stringify(rowData, null, 2)
+        );
+
+        console.log(
+            "rowKey:",
+            JSON.stringify(rowKey, null, 2)
+        );
 
 
         /*
@@ -129,63 +207,75 @@ app.patch("/api/reclami/:NumReclamo", async (req, res) => {
          * CERCHIAMO IL RECLAMO
          * =====================================================
          */
+
         const reclamo = await Reclami.findOne({
-            NumReclamo:  Number(NumReclamo)
+
+            NumReclamo: Number(NumReclamo)
+
         }).lean();
 
+
         if (!reclamo) {
+
             return res.status(404).json({
                 ok: false,
                 error: `Reclamo ${NumReclamo} non trovato`
             });
+
         }
+
+
         /*
          * =====================================================
          * RECUPERIAMO L'ARRAY
          * =====================================================
          */
+
         const arrayData = reclamo[array];
+
+
         /*
          * =====================================================
          * CASO 2
          *
          * ARRAY NON ESISTENTE
          *
-         * Creiamo direttamente l'array
-         * con il nuovo elemento.
+         * Creiamo l'array.
          * =====================================================
          */
 
         if (!Array.isArray(arrayData)) {
+
             const newElement = {
-                [rowKeyField]: rowKeyField,
-                [field]: rowKey
+                ...rowData,
+                [field]: value
             };
-            /*
-             * Se il chiamante ha fornito rowData,
-             * utilizziamo anche gli altri dati
-             * dell'elemento.
-             */
-            if (rowData && typeof rowData === "object") {
-                Object.assign(newElement, rowData);
-                /*
-                 * Il valore ricevuto nel PATCH
-                 * deve avere la precedenza.
-                 */
-                newElement[rowKeyField] = rowKey;
-                newElement[field] = value;
-            }
-            console.log('nn esiste array ' +  array);
+
+
+            console.log(
+                "ARRAY NON ESISTENTE:",
+                array
+            );
+
+            console.log(
+                "NUOVO ELEMENTO:",
+                JSON.stringify(newElement, null, 2)
+            );
+
 
             const result = await Reclami.updateOne(
-                {NumReclamo:  Number(NumReclamo)},
+
+                {
+                    NumReclamo: Number(NumReclamo)
+                },
+
                 {
                     $set: {
                         [array]: [newElement]
                     }
                 }
+
             );
-            console.log('nn esiste array ' +  JSON.stringify(result, null, 2));
 
 
             return res.json({
@@ -208,14 +298,44 @@ app.patch("/api/reclami/:NumReclamo", async (req, res) => {
         /*
          * =====================================================
          * CERCHIAMO L'ELEMENTO NELL'ARRAY
+         *
+         * Confrontiamo TUTTI i campi della chiave.
+         *
+         * Esempio:
+         *
+         * rowKey:
+         *
+         * {
+         *   nome: "Morosità e Sospensione",
+         *   codice: "MOR"
+         * }
+         *
+         * L'elemento deve avere entrambi i valori uguali.
          * =====================================================
          */
 
-        const elementIndex = arrayData.findIndex(
-            item =>
-                item &&
-                item[rowKeyField] !== undefined &&
-                String(item[rowKeyField]) === String(rowKey)
+        const elementIndex = arrayData.findIndex(item => {
+
+            if (!item || typeof item !== "object") {
+                return false;
+            }
+
+
+            return Object.entries(rowKey).every(
+                ([key, expectedValue]) => {
+
+                    return String(item[key]) ===
+                           String(expectedValue);
+
+                }
+            );
+
+        });
+
+
+        console.log(
+            "elementIndex:",
+            elementIndex
         );
 
 
@@ -231,17 +351,34 @@ app.patch("/api/reclami/:NumReclamo", async (req, res) => {
          */
 
         if (elementIndex !== -1) {
-console.log("===== PATCH RECLAMO =====add");
+
             const result = await Reclami.updateOne(
+
                 {
-                    NumReclamo:  Number(NumReclamo)
+                    NumReclamo: Number(NumReclamo)
                 },
+
                 {
                     $set: {
                         [`${array}.${elementIndex}.${field}`]: value
                     }
                 }
+
             );
+
+
+            console.log(
+                "RISULTATO UPDATE ARRAY:",
+                {
+                    matchedCount: result.matchedCount,
+                    modifiedCount: result.modifiedCount,
+                    array,
+                    elementIndex,
+                    field,
+                    value
+                }
+            );
+
 
             return res.json({
 
@@ -253,7 +390,7 @@ console.log("===== PATCH RECLAMO =====add");
 
                 modifiedCount: result.modifiedCount,
 
-                array: array,
+                array,
 
                 index: elementIndex
 
@@ -269,49 +406,41 @@ console.log("===== PATCH RECLAMO =====add");
          * ARRAY ESISTENTE
          * ELEMENTO NON ESISTENTE
          *
-         * Creiamo un nuovo elemento e facciamo PUSH.
+         * Creiamo un nuovo elemento.
          * =====================================================
          */
 
         const newElement = {
 
-            [rowKeyField]: rowKey,
+            ...rowData,
 
             [field]: value
 
         };
 
 
-        /*
-         * Se è stato passato rowData,
-         * completiamo il nuovo elemento.
-         */
+        console.log(
+            "ELEMENTO NON ESISTENTE"
+        );
 
-        if (rowData && typeof rowData === "object") {
-
-            Object.assign(newElement, rowData);
-
-            /*
-             * Garantiamo che la chiave e il valore
-             * del PATCH abbiano la precedenza.
-             */
-
-            newElement[rowKeyField] = rowKey;
-
-            newElement[field] = value;
-
-        }
+        console.log(
+            "NUOVO ELEMENTO:",
+            JSON.stringify(newElement, null, 2)
+        );
 
 
         const result = await Reclami.updateOne(
+
             {
-                NumReclamo:  Number(NumReclamo)
+                NumReclamo: Number(NumReclamo)
             },
+
             {
                 $push: {
                     [array]: newElement
                 }
             }
+
         );
 
 
@@ -411,11 +540,81 @@ app.get("/api/file/:tipoFile", async (req, res) => {
   }
 });
 
+
+const viste = {
+    reclamiLettere: "ReclamiLettere",
+    reclamiCheckRischi: "ReclamiCheckRischi",
+    reclamiRischi: "ReclamiRischi",
+    reclamiArera: "ReclamiArera",
+    reclamiUploadClienteFinale: "ReclamiUploadClienteFinale",
+    reclamiUploadUtility: "ReclamiUploadUtility"
+};
+
+app.get('/reclami/:vista/:NumReclamo', async (req, res) => {
+    console.log("=================================");
+    console.log("ROUTE /reclami/:vista/:NumReclamo");
+    console.log("req.params:", req.params);
+    console.log("vista:", viste[req.params.vista]);
+    console.log("NumReclamo:", req.params.NumReclamo);
+    console.log("=================================");
+
+    try {
+        const NumReclamo = parseInt(req.params.NumReclamo, 10);
+        const modelName = viste[req.params.vista];
+        console.log("modelName:", modelName);
+    
+        if (!modelName) {
+            return res.status(400).json({
+                message: 'Vista non valida: ' + req.params.vista
+            });
+        }
+
+        const Model = getViewModel(modelName);
+
+        const reclamo = await Model.findOne({
+            NumReclamo
+        });
+
+        if (!reclamo) {
+            return res.status(404).json({
+                message: 'Reclamo non trovato ' + NumReclamo
+            });
+        }
+
+        res.json(reclamo);
+
+    } catch (error) {
+        res.status(500).json({
+            error: error.message
+        });
+    }
+});
+
+/*
 app.get('/reclamiLettere/:NumReclamo', async (req, res) => {
     try {
         const NumReclamo = parseInt(req.params.NumReclamo, 10);
 
         const reclamo = await ReclamiLettere.findOne({
+            NumReclamo : NumReclamo
+        });
+
+        if (!reclamo) {
+            return res.status(404).json({ message: 'Reclamo non trovato ' + NumReclamo });
+        }
+
+        res.json(reclamo);
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/reclamiCheckRischi/:NumReclamo', async (req, res) => {
+    try {
+        const NumReclamo = parseInt(req.params.NumReclamo, 10);
+
+        const reclamo = await ReclamiCheckRischi.findOne({
             NumReclamo : NumReclamo
         });
 
@@ -466,7 +665,7 @@ app.get('/reclamiArera/:NumReclamo', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
+*/
 app.get("/api/reclami/search", async (req, res) => {
   try {
     const { q } = req.query;

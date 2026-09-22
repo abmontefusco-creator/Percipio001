@@ -5,8 +5,6 @@ const aggiornaCampoReclamo = async ({
     field,
     value,
     array,
-    rowKeyField,
-    rowKey,
     rowData
 }) => {
     const response = await fetch(
@@ -22,8 +20,6 @@ const aggiornaCampoReclamo = async ({
                 field,
                 value,
                 array,
-                rowKeyField,
-                rowKey,
                 rowData
             })
         }

@@ -25,8 +25,6 @@ function TabPanel(props) {
 
 function ProfilazioneDossier({row}) {
   const [tabIndex, setTabIndex] = useState(0);
-  console.log("ROW ProfilazioneDossier:", row);
-
   const numReclamoPar = row.NumReclamo;
 
   const handleChange = (_, newValue) => {
@@ -35,13 +33,6 @@ function ProfilazioneDossier({row}) {
 
   return (
     <Box sx={{ p: 3 }}>
-
-      {row && (
-        <Typography variant="subtitle1" gutterBottom>
-          Claim selezionato: {row.name}
-        </Typography>
-      )}
-
       {/* Tab Strip */}
       <Tabs
         value={tabIndex}
@@ -87,7 +78,11 @@ function ProfilazioneDossier({row}) {
       </TabPanel>
 
       <TabPanel value={tabIndex} index={4}>
-        <Typography>Check Profilazione</Typography>
+        <MostraLista
+          numReclamo={numReclamoPar}
+          nomeArray="profilazioneRischi"
+          nomeQuery="reclamiCheckRischi"
+        />
       </TabPanel>
     </Box>
   );

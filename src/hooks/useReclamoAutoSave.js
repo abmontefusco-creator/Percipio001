@@ -6,20 +6,32 @@ const useReclamoAutoSave = (numReclamo) => {
     const [saving, setSaving] = useState({});
     const [saved, setSaved] = useState({});
     const [errors, setErrors] = useState({});
-    
-        const updateField = useCallback(async ({
-            field,
-            value,
-            array,
-            rowKeyField,
-            rowKey,
-            rowData
-        }) => {
+
+
+    const updateField = useCallback(async ({
+        field,
+        value,
+        array,
+        rowData
+    }) => {
 
         /*
-         * Creo un identificativo locale dell'operazione.
+         * La chiave locale della riga è composta
+         * da tutti i campi tranne quello che stiamo modificando.
+         */
+        const rowKey = rowData
+            ? Object.entries(rowData)
+                .filter(([key]) => key !== field)
+                .map(([key, value]) => `${key}=${value}`)
+                .join("|")
+            : "";
+
+
+        /*
+         * Identificativo locale dell'operazione.
          *
-         * Serve per sapere quale cella è in fase di salvataggio.
+         * Esempio:
+         * profilazioneARERA.nome=Morosità e Sospensione|codice=MOR.presente
          */
         const operationKey = array
             ? `${array}.${rowKey}.${field}`
@@ -27,7 +39,7 @@ const useReclamoAutoSave = (numReclamo) => {
 
 
         /*
-         * Stato: SALVATAGGIO IN CORSO
+         * STATO: SALVATAGGIO IN CORSO
          */
         setSaving(prev => ({
             ...prev,
@@ -54,8 +66,6 @@ const useReclamoAutoSave = (numReclamo) => {
                 field,
                 value,
                 array,
-                rowKeyField,
-                rowKey,
                 rowData
             });
 
@@ -113,13 +123,21 @@ const useReclamoAutoSave = (numReclamo) => {
     const isSaving = useCallback(({
         field,
         array,
-        rowKey,
-        rowKeyField
+        rowData
     }) => {
+
+        const rowKey = rowData
+            ? Object.entries(rowData)
+                .filter(([key]) => key !== field)
+                .map(([key, value]) => `${key}=${value}`)
+                .join("|")
+            : "";
+
 
         const operationKey = array
             ? `${array}.${rowKey}.${field}`
             : field;
+
 
         return !!saving[operationKey];
 
@@ -133,12 +151,21 @@ const useReclamoAutoSave = (numReclamo) => {
     const isSaved = useCallback(({
         field,
         array,
-        rowKey
+        rowData
     }) => {
+
+        const rowKey = rowData
+            ? Object.entries(rowData)
+                .filter(([key]) => key !== field)
+                .map(([key, value]) => `${key}=${value}`)
+                .join("|")
+            : "";
+
 
         const operationKey = array
             ? `${array}.${rowKey}.${field}`
             : field;
+
 
         return !!saved[operationKey];
 

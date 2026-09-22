@@ -13,6 +13,7 @@ import {
 
 import useReclamoAutoSave from "../../../hooks/useReclamoAutoSave";
 import AutoSaveCheckbox from "../../pageComponents/AutoSaveCheckbox";
+import AutoSaveFileUpload from "../../pageComponents/AutoSaveFileUpload";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -42,8 +43,9 @@ const MostraLista = ({ numReclamo, nomeArray, nomeQuery }) => {
     const loadData = async () => {
       try {
         setLoading(true);
-        const url = `${API_URL}/${nomeQuery}/${numReclamo}`;
-        console.log(url);
+        const url = `${API_URL}/reclami/${nomeQuery}/${numReclamo}`;
+        console.log('url ' + url);
+        
         const response = await fetch(url);
         if (!response.ok) {
           throw new Error(
@@ -51,8 +53,8 @@ const MostraLista = ({ numReclamo, nomeArray, nomeQuery }) => {
           );
         }
         const data = await response.json();
+        //console.log("data:", JSON.stringify(data, null, 2));
         const lista = data.listaRitorno || [];
-        console.log('data ' + lista);
         
         setListaCompleta(lista);
 
@@ -75,6 +77,7 @@ const MostraLista = ({ numReclamo, nomeArray, nomeQuery }) => {
     }
 
   }, [numReclamo, nomeQuery]);
+
 
   /*
    * ============================================================
@@ -114,6 +117,7 @@ const MostraLista = ({ numReclamo, nomeArray, nomeQuery }) => {
    * RENDER
    * ============================================================
    */
+
   return (
     <TableContainer
       component={Paper}
@@ -122,30 +126,18 @@ const MostraLista = ({ numReclamo, nomeArray, nomeQuery }) => {
         overflow: "auto"
       }}
     >
-      <Table stickyHeader>
-      
-      <TableHead>
-            <TableRow>
+    <Table stickyHeader>
 
-              {colonne.map((colonna) => (
+    <TableHead>
+      <TableRow>
 
-                <TableCell
-                  key={colonna}
-                  align={colonna === "presente" ? "center" : "left"}
-                  sx={{
-                    backgroundColor: "#d9eaf7",
-                    fontWeight: "bold",
-                    color: "#1f1f1f",
-                    position: "sticky",
-                    top: 0,
-                    zIndex: 2
-                  }}
-                >
-                  {colonna}
-                </TableCell>
+        {colonne.map((colonna) => {
 
-              ))}
+          if (colonna === "_id") {
+            return null;
+          }
 
+          return (
               <TableCell
                 align="center"
                 sx={{
@@ -157,114 +149,143 @@ const MostraLista = ({ numReclamo, nomeArray, nomeQuery }) => {
                   zIndex: 2
                 }}
               >
-                Stato
+              {colonna}
+            </TableCell>
+          );
+
+        })}
+
+        <TableCell
+          align="center"
+          sx={{
+            backgroundColor: "#d9eaf7",
+            fontWeight: "bold",
+            color: "#1f1f1f",
+            position: "sticky",
+            top: 0,
+            zIndex: 2
+          }}
+        >
+          Stato
+        </TableCell>
+
+      </TableRow>
+    </TableHead>
+      <TableBody>
+
+        {listaCompleta.map((item, index) => {
+          const rowKey = Object.entries(item)
+            .filter(([key]) => key !== "presente")
+            .map(([key, value]) => `${key}=${value}`)
+            .join("|");
+
+
+          const savingRow = isSaving({
+            array: nomeArray,
+            rowData: item,
+            field: "presente"
+          });
+
+
+          const savedRow = isSaved({
+            array: nomeArray,
+            rowData: item,
+            field: "presente"
+          });
+
+
+          const errorRow =
+            errors[
+              `${nomeArray}.${rowKey}.presente`
+            ];
+
+
+          return (
+            <TableRow key={rowKey || index}>
+
+              {colonne.map((colonna) => {
+
+                if (colonna === "_id") {
+                  return null;
+                }
+
+
+                if (colonna.startsWith("upload")) {
+
+                  return (
+                    <TableCell key={colonna}>
+
+                      <AutoSaveFileUpload
+                        numReclamo={item.NumReclamo}
+                        rowId={item._id}
+                      />
+
+                    </TableCell>
+                  );
+                }
+
+
+                if (colonna === "presente") {
+
+                  return (
+                    <TableCell
+                      key={colonna}
+                      align="center"
+                    >
+
+                      <AutoSaveCheckbox
+                        numReclamo={numReclamo}
+                        initialChecked={
+                          Number(item.presente) === 1
+                        }
+                        array={nomeArray}
+                        field="presente"
+                        rowData={item}
+                        updateField={updateField}
+                        isSaving={isSaving}
+                        isSaved={isSaved}
+                        errors={errors}
+                      />
+
+                    </TableCell>
+                  );
+                }
+
+
+                return (
+                  <TableCell key={colonna}>
+                    {item[colonna] !== null &&
+                    item[colonna] !== undefined
+                      ? String(item[colonna])
+                      : ""}
+                  </TableCell>
+                );
+
+              })}
+
+
+              <TableCell align="center">
+
+                {savingRow && "Salvataggio..."}
+
+                {savedRow &&
+                  !savingRow &&
+                  "Salvato"}
+
+                {errorRow &&
+                  !savingRow &&
+                  "Errore"}
+
               </TableCell>
 
             </TableRow>
-          </TableHead>
+          );
 
-        <TableBody>
+        })}
 
-          {listaCompleta.map((item, index) => {
+      </TableBody>
 
-            const savingRow = isSaving({
-              array: nomeArray,
-              rowKey: item.nome,
-              field: "presente"
-            });
-
-            const savedRow = isSaved({
-              array: nomeArray,
-              rowKey: item.nome,
-              field: "presente"
-            });
-
-            const errorRow =
-              errors[
-                `${nomeArray}.${item.nome}.presente`
-              ];
-
-            return (
-
-              <TableRow
-                key={item.nome ?? index}
-              >
-
-                {colonne.map((colonna) => {
-
-                  /*
-                   * ==================================================
-                   * CHECKBOX PRESENTE
-                   * ==================================================
-                   */
-                  if (colonna === "presente") {
-
-                    return (
-                      <TableCell
-                        key={colonna}
-                        align="center"
-                      >
-
-                        <AutoSaveCheckbox
-                          numReclamo={numReclamo}
-                          initialChecked={
-                            Number(item.presente) === 1
-                          }
-                          array={nomeArray}
-                          rowKeyField="nome"
-                          rowKey={item.nome}
-                          field="presente"
-                          rowData={item}
-
-                          updateField={updateField}
-                          isSaving={isSaving}
-                          isSaved={isSaved}
-                          errors={errors}
-                        />
-
-                      </TableCell>
-                    );
-                  }
-
-                  /*
-                   * ==================================================
-                   * VALORE NORMALE
-                   * ==================================================
-                   */
-                  return (
-                    <TableCell key={colonna}>
-                      {item[colonna] !== null &&
-                      item[colonna] !== undefined
-                        ? String(item[colonna])
-                        : ""}
-                    </TableCell>
-                  );
-
-                })}
-
-                <TableCell align="center">
-
-                  {savingRow && "Salvataggio..."}
-
-                  {savedRow &&
-                    !savingRow &&
-                    "Salvato"}
-
-                  {errorRow &&
-                    !savingRow &&
-                    "Errore"}
-
-                </TableCell>
-
-              </TableRow>
-
-            );
-          })}
-
-        </TableBody>
-
-      </Table>
-    </TableContainer>
+    </Table>    </TableContainer>
   );
 };
 

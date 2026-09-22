@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-function DettaglioReclamo({ form, setForm, tipologiche, handleChange }) {
+function DettaglioReclamo({  row, setSelectedRow , tipologiche, handleChange }) {
 
   return (
     <>
@@ -31,7 +31,7 @@ function DettaglioReclamo({ form, setForm, tipologiche, handleChange }) {
                     <InputLabel>Tipologia Contratto</InputLabel>
                     <Select
                     name="tipologiaContratto"
-                    value={form.tipologiaContratto}
+                    value={row?.tipologiaContratto ?? ""}
                     onChange={handleChange}
                     label="Tipologia Contratto"
                     >
@@ -49,7 +49,7 @@ function DettaglioReclamo({ form, setForm, tipologiche, handleChange }) {
                     <InputLabel>Tipologia Fornitura</InputLabel>
                     <Select
                     name="tipologiaFornitura"
-                    value={form.tipologiaFornitura}
+                    value={row?.tipologiaFornitura ?? ""}
                     onChange={handleChange}
                     label="Tipologia Fornitura"
                     >
@@ -66,8 +66,8 @@ function DettaglioReclamo({ form, setForm, tipologiche, handleChange }) {
                 <FormControl fullWidth>
                     <InputLabel>Potenza KW</InputLabel>
                     <Select
-                    name="tipologiaFornitura"
-                    value={form.potenzaKW}
+                    name="potenzaKW"
+                    value={row?.potenzaKW ?? ""}
                     onChange={handleChange}
                     label="Potenza KW"
                     >
@@ -85,7 +85,7 @@ function DettaglioReclamo({ form, setForm, tipologiche, handleChange }) {
                     <InputLabel>SMC Anno</InputLabel>
                     <Select
                     name="sMCAnno"
-                    value={form.sMCAnno}
+                    value={row?.sMCAnno ?? ""}
                     onChange={handleChange}
                     label="SMC Anno"
                     >
@@ -102,22 +102,22 @@ function DettaglioReclamo({ form, setForm, tipologiche, handleChange }) {
                 <TextField
                   label="codice POD"
                   name="codicePOD"
-                  value={form.codicePOD}
-                  onChange={(e) => handleChange(index, e)}
+                  value={row?.codicePOD ?? ""}
+                  onChange={handleChange}
                   fullWidth
                 />
                 <TextField
                   label="Codice PdR"
-                  name="codicePdR"
-                  value={form.codicePdR}
-                  onChange={(e) => handleChange(index, e)}
+                  name="codicePDR"
+                  value={row?.codicePDR ?? ""}
+                  onChange={handleChange}
                   fullWidth
                 />
                 <TextField
                   label="Riferimento Reclamo"
                   name="riferimentoReclamo"
-                  value={form.riferimentoReclamo}
-                  onChange={(e) => handleChange(index, e)}
+                  value={row?.riferimentoReclamo ?? ""}
+                  onChange={handleChange}
                   fullWidth
                 />
               </Box>
@@ -126,7 +126,7 @@ function DettaglioReclamo({ form, setForm, tipologiche, handleChange }) {
                     <InputLabel>Contratto Fornitura</InputLabel>
                     <Select
                     name="contrattoFornitura"
-                    value={form.contrattoFornitura}
+                    value={row?.contrattoFornitura ?? ""}
                     onChange={handleChange}
                     label="Contratto Fornitura"
                     >
@@ -143,15 +143,15 @@ function DettaglioReclamo({ form, setForm, tipologiche, handleChange }) {
                 <TextField
                   label="Numero Contratto"
                   name="numeroContratto"
-                  value={form.numeroContratto}
-                  onChange={(e) => handleChange(index, e)}
+                  value={row?.numeroContratto ?? ""}
+                  onChange={handleChange}
                   fullWidth
                 />
                 <FormControl fullWidth>
                     <InputLabel>Reclamo</InputLabel>
                     <Select
                     name="reclamo"
-                    value={form.reclamo}
+                    value={row?.reclamo ?? ""}
                     onChange={handleChange}
                     label="Reclamo"
                     >

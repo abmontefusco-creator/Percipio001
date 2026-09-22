@@ -5,11 +5,12 @@ import {
   Tab,
   Typography
 } from "@mui/material";
+import MostraLista from "./Profilazione Dossier/MostraListaGenerica";
+
 
 // Helper TabPanel (pattern MUI standard)
 function TabPanel(props) {
   const { children, value, index } = props;
-
   return (
     <div hidden={value !== index}>
       {value === index && (
@@ -23,20 +24,13 @@ function TabPanel(props) {
 
 function AnagraficaDossier({row}) {
   const [tabIndex, setTabIndex] = useState(0);
-
+  const numReclamoPar = row.NumReclamo;
   const handleChange = (_, newValue) => {
     setTabIndex(newValue);
   };
 
   return (
     <Box sx={{ p: 3 }}>
-
-      {row && (
-        <Typography variant="subtitle1" gutterBottom>
-          Claim selezionato: {row.name}
-        </Typography>
-      )}
-
       {/* Tab Strip */}
       <Tabs
         value={tabIndex}
@@ -53,11 +47,21 @@ function AnagraficaDossier({row}) {
 
       {/* Contenuti Tab */}
       <TabPanel value={tabIndex} index={0}>
-        <Typography>Upload Cliente</Typography>
+        <MostraLista
+          numReclamo={numReclamoPar}
+          nomeArray="profilazioneRischi"
+          nomeQuery="reclamiUploadClienteFinale"
+        />
+
       </TabPanel>
 
       <TabPanel value={tabIndex} index={1}>
-        <Typography>Upload Utility</Typography>
+        <MostraLista
+          numReclamo={numReclamoPar}
+          nomeArray="profilazioneRischi"
+          nomeQuery="reclamiUploadUtility"
+        />
+
       </TabPanel>
 
       <TabPanel value={tabIndex} index={2}>

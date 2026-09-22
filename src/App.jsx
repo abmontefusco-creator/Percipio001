@@ -8,6 +8,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Typography from "@mui/material/Typography";
 import LeftDrawerMenu from "./components/LeftDrawerMenu";
 import GestioneProcesso from './components/processi/GestioneProcesso';
+import Link from "@mui/material/Link";
 
 function InserimentoClaim() { 
   return <div>Inserimento Claim</div>; 
@@ -42,11 +43,19 @@ export default function App() {
             setSelectedRow={setSelectedRow}
           />
         );
+      case "gestione-claim":
+        return (
+          <ClaimForm
+            row={selectedRow}
+            setSelectedRow={setSelectedRow}
+          />
+        );
       default:
         return <ClaimForm />;
     }
   };
-
+//console.log("selectedRow:", selectedRow);
+//console.log("NumReclamo:", selectedRow?.NumReclamo);
   return (
     <>
       <AppBar position="fixed">
@@ -59,7 +68,23 @@ export default function App() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6">Gestione Claim Numero Reclamo {selectedRow?.NumReclamo && ` - ${selectedRow.NumReclamo}`}</Typography>
+          <Typography variant="h6">
+            {selectedRow?.NumReclamo ? (
+              <Typography
+                component="span"
+                onClick={() => setActivePage("gestione-claim")}
+                sx={{
+                  cursor: "pointer",
+                  textDecoration: "underline",
+                  display: "inline",
+                }}
+              >
+                Gestione Claim Numero Reclamo - {selectedRow.NumReclamo}
+              </Typography>
+            ) : (
+              "Gestione Nuovo Claim"
+            )}
+          </Typography>
         </Toolbar>
       </AppBar>
 

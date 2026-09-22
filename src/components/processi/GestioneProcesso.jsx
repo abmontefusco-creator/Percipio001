@@ -26,7 +26,7 @@ function TabPanel(props) {
 
 export default function GestioneProcesso({row}) {
   const [tabIndex, setTabIndex] = useState(0);
-  console.log("ROW:", row);
+  //console.log("ROW:", row);
 
   const handleChange = (_, newValue) => {
     setTabIndex(newValue);
@@ -38,13 +38,6 @@ export default function GestioneProcesso({row}) {
       <Typography variant="h4" gutterBottom>
         Gestione Processo
       </Typography>
-
-      {row && (
-        <Typography variant="subtitle1" gutterBottom>
-          Claim selezionato: {row.name}
-        </Typography>
-      )}
-
       {/* Tab Strip */}
       <Tabs
         value={tabIndex}

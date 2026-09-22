@@ -17,8 +17,16 @@ import { v4 as uuidv4 } from 'uuid';
 import PersonaFisica from './PersonaFisica';
 import DettaglioReclamo from './DettaglioReclamo';
 import PersonaGiuridica from './PersonaGiuridica';
+const API_URL = import.meta.env.VITE_API_URL;
 
-function ClaimForm() {
+function ClaimForm({ row, setSelectedRow }) {
+
+  console.log(
+  "🔄 ClaimForm render -",
+  row?.NumReclamo,
+  row?.clienteFinale
+);
+
   const [open, setOpen] = useState(false);
   const [tipologiche, setTipologiche] = useState({});
   const [loading, setLoading] = useState(false);
@@ -73,11 +81,45 @@ function ClaimForm() {
   }, []);
 
   // Aggiorna campi generici
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-  };
+const handleChange = async (e) => {
+  const { name, value } = e.target;
+  
+  setSelectedRow(prev => {
+    const nuovoRow = {
+      ...prev,
+      [name]: value
+    };
 
+    console.log("NUOVO selectedRow:", nuovoRow);
+
+    return nuovoRow;
+  });
+
+  try {
+    const response = await fetch(
+      `${API_URL}/api/reclami/${row.NumReclamo}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          field: name,
+          value: value
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Errore nel salvataggio");
+    }
+
+    console.log("SALVATO DB:", name, value);
+
+  } catch (error) {
+    console.error("Errore autosave:", error);
+  }
+};
   // Aggiorna campi delle persone fisiche
   const handlePersonaChange = (index, e) => {
     const { name, value } = e.target;
@@ -157,7 +199,7 @@ function ClaimForm() {
                     <InputLabel>Cliente Finale</InputLabel>
                     <Select
                     name="clienteFinale"
-                    value={form.clienteFinale}
+                    value={row?.clienteFinale ?? ""}
                     onChange={handleChange}
                     label="Cliente Finale"
                     >
@@ -176,7 +218,7 @@ function ClaimForm() {
                     <InputLabel>Provenienza Claim</InputLabel>
                     <Select
                     name="provenienzaClaim"
-                    value={form.provenienzaClaim}
+                    value={row?.provenienzaClaim ?? ""}
                     onChange={handleChange}
                     label="Provenienza Claim"
                     >
@@ -195,7 +237,7 @@ function ClaimForm() {
                     <InputLabel>Settore</InputLabel>
                     <Select
                     name="settore"
-                    value={form.settore}
+                    value={row?.settore ?? ""}
                     onChange={handleChange}
                     label="Settore"
                     >
@@ -217,9 +259,9 @@ function ClaimForm() {
                     <InputLabel>Soggetto Provenienza</InputLabel>
                     <Select
                     name="soggettoProvenienza"
-                    value={form.soggettoProvenienza}
+                    value={row?.soggettoProvenienza ?? ""}
                     onChange={handleChange}
-                    label="Cliente Finale"
+                    label="Soggetto Provenienza"
                     >
                     <MenuItem value="">
                         <em>Soggetto Provenienza</em>
@@ -236,7 +278,7 @@ function ClaimForm() {
                     <InputLabel>Tipologia Claim</InputLabel>
                     <Select
                     name="tipologiaClaim"
-                    value={form.tipologiaClaim}
+                    value={row?.tipologiaClaim ?? ""}
                     onChange={handleChange}
                     label="Provenienza Claim"
                     >
@@ -255,7 +297,7 @@ function ClaimForm() {
                     <InputLabel>Argomento</InputLabel>
                     <Select
                     name="argomento"
-                    value={form.argomento}
+                    value={row?.argomento ?? ""}
                     onChange={handleChange}
                     label="argomento"
                     >
@@ -274,7 +316,7 @@ function ClaimForm() {
                     <InputLabel>Sub Argomento</InputLabel>
                     <Select
                     name="subArgomento"
-                    value={form.subArgomento}
+                    value={row?.subArgomento ?? ""}
                     onChange={handleChange}
                     label="Sub Argomento"
                     >
@@ -293,7 +335,7 @@ function ClaimForm() {
                     <InputLabel>Oggetto Claim</InputLabel>
                     <Select
                     name="oggettoClaim"
-                    value={form.oggettoClaim}
+                    value={row?.oggettoClaim ?? ""}
                     onChange={handleChange}
                     label="oggettoClaim"
                     >
@@ -326,8 +368,8 @@ function ClaimForm() {
       />   
 
       <DettaglioReclamo
-        form={form}
-        setForm={setForm}      
+        row={row}
+        setSelectedRow={setSelectedRow}      
         tipologiche={tipologiche}
         handleChange={handleChange}
       />   

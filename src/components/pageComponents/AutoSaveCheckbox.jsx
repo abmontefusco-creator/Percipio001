@@ -102,8 +102,6 @@ console.log("AUTOSAVE → INVIO:", {
              */
             const result = await updateField({
                 array,
-                rowKeyField,
-                rowKey,
                 field,
                 value: newChecked ? 1 : 0,
                 rowData
