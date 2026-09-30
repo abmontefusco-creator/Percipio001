@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { supabase } from "../../services/supabaseClient";
 
-function AutoSaveFileUpload({ numReclamo }) {
+function AutoSaveFileUpload({ numReclamo, rowId }) {
 
     const inputRef = useRef(null);
 
@@ -9,6 +9,7 @@ function AutoSaveFileUpload({ numReclamo }) {
     const [uploadedFile, setUploadedFile] = useState(null);
     const [error, setError] = useState(null);
 
+    console.log("data:", JSON.stringify(rowId, null, 2));
     const handleFileChange = async (event) => {
 
         const file = event.target.files?.[0];
@@ -23,12 +24,28 @@ function AutoSaveFileUpload({ numReclamo }) {
 
         try {
 
+            // Controllo parametri
+            if (!numReclamo) {
+                throw new Error("NumReclamo mancante");
+            }
+
+            if (!rowId) {
+                throw new Error("ID della riga mancante");
+            }
+
+            // Nome univoco del file
             const fileName = `${Date.now()}_${file.name}`;
 
-            const filePath = `reclami/${numReclamo}/${fileName}`;
+            // Struttura:
+            // reclami/
+            //   NumReclamo/
+            //     rowId/
+            //       file
+            const filePath = `reclami/${numReclamo}/${rowId}/${fileName}`;
 
             console.log("UPLOAD FILE:", {
                 numReclamo,
+                rowId,
                 fileName,
                 filePath,
                 size: file.size,
@@ -45,11 +62,42 @@ function AutoSaveFileUpload({ numReclamo }) {
 
             console.log("UPLOAD RIUSCITO:", data);
 
+            const response = await fetch(
+                `${import.meta.env.VITE_API_URL}/api/reclami/${numReclamo}`,
+                {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        array: "profilazioneRischi",
+                        rowId: rowId,
+                        field: "upload",
+                        value: {
+                            name: file.name,
+                            path: filePath,
+                            id: data.id,
+                            fullPath: data.fullPath
+                        }
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    "Upload riuscito, ma errore nel salvataggio su MongoDB"
+                );
+            }
+
+            const patchResult = await response.json();
+
+            console.log("PATCH FILE RIUSCITA:", patchResult);
+
             setUploadedFile({
                 name: file.name,
                 path: filePath
             });
-
+            
         } catch (err) {
 
             console.error("Errore upload:", err);
@@ -80,7 +128,10 @@ function AutoSaveFileUpload({ numReclamo }) {
                 onClick={() => inputRef.current?.click()}
                 disabled={uploading}
             >
-                {uploading ? "Caricamento..." : "📎 Carica file"}
+                {uploading
+                    ? "Caricamento..."
+                    : "📎 Carica file"
+                }
             </button>
 
             {uploadedFile && (

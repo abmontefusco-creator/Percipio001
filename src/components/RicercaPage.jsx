@@ -10,6 +10,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
+const API_URL = import.meta.env.VITE_API_URL;
 
 function RicercaPage({setActivePage ,setSelectedRow} ) {
   const [query, setQuery] = useState("");
@@ -92,9 +93,7 @@ function RicercaPage({setActivePage ,setSelectedRow} ) {
     setError(null);
     try {
       const res = await fetch(
-        `https://percipio001.onrender.com/api/reclami/search?q=${encodeURIComponent(
-          query
-        )}`
+        `${API_URL}/api/reclami/search?q=${encodeURIComponent(query)}`
       );
       if (!res.ok) throw new Error("Errore nella chiamata API");
       const json = await res.json();

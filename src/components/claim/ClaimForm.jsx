@@ -21,15 +21,102 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 function ClaimForm({ row, setSelectedRow }) {
 
-  console.log(
-  "🔄 ClaimForm render -",
-  row?.NumReclamo,
-  row?.clienteFinale
-);
-
   const [open, setOpen] = useState(false);
   const [tipologiche, setTipologiche] = useState({});
   const [loading, setLoading] = useState(false);
+
+  const numReclamoCorrente = row?.NumReclamo;
+
+  const aggiungiPersonaFisica = async () => {
+    const nuovaPersona = {
+      _id: crypto.randomUUID(),
+      codFiscale: ""
+    };
+
+    // Aggiorno subito la UI
+    setSelectedRow(prev => ({
+      ...prev,
+      personaFisica: [
+        ...(prev.personaFisica ?? []),
+        nuovaPersona
+      ]
+    }));
+
+    // poi eventualmente salviamo su Mongo
+  };
+
+  const aggiungiPersonaGiuridica = async () => {
+    const nuovaPersona = {
+      _id: crypto.randomUUID(),
+      codFiscale: ""
+    };
+
+    // Aggiorno subito la UI
+    setSelectedRow(prev => ({
+      ...prev,
+      personaFisica: [
+        ...(prev.personaFisica ?? []),
+        nuovaPersona
+      ]
+    }));
+
+    // poi eventualmente salviamo su Mongo
+  };
+
+useEffect(() => {
+  if (!numReclamoCorrente) {
+    console.log("⛔ Nessun NumReclamo: fetch NON eseguita");
+    return;
+  }
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+
+      const url =
+        `${API_URL}/reclami/reclamoCompleto/${numReclamoCorrente}`;
+
+      console.log("🌐 CHIAMATA:", url);
+
+      const response = await fetch(url);
+
+      console.log("📡 RESPONSE STATUS:", response.status);
+
+      if (!response.ok) {
+        throw new Error(`Errore HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      console.log(
+        "📦 RECLAMO COMPLETO:",
+        JSON.stringify(data, null, 2)
+      );
+
+      console.log("✅ AGGIORNO selectedRow");
+      setSelectedRow(data);
+
+    } catch (error) {
+      console.error(
+        "❌ Errore caricamento reclamo:",
+        error
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  loadData();
+
+}, [numReclamoCorrente]);
+
+  console.log(
+    "🔄 ClaimForm render -",
+    row?.NumReclamo,
+    row?.clienteFinale
+  );
+
+//  console.log(    "data:",    JSON.stringify(row, null, 2));
 
   const [form, setForm] = useState({
     _id: null,
@@ -91,7 +178,7 @@ const handleChange = async (e) => {
     };
 
     console.log("NUOVO selectedRow:", nuovoRow);
-
+  console.log("🟣 ClaimForm: ARRIVATO AL RETURN");
     return nuovoRow;
   });
 
@@ -121,24 +208,13 @@ const handleChange = async (e) => {
   }
 };
   // Aggiorna campi delle persone fisiche
-  const handlePersonaChange = (index, e) => {
+  /*const handlePersonaChange = (index, e) => {
     const { name, value } = e.target;
-    const persone = [...form.personaFisica];
+    const persone = [...row.personaFisica];
     persone[index][name] = value;
-    setForm({ ...form, personaFisica: persone });
-  };
-
-
-
-  // Aggiunge una nuova persona
-  const aggiungiPersona = () => {
-    setForm({
-      ...form,
-      personaFisica: [...form.personaFisica, {id: uuidv4(),  pec: '', nome: '' }]
-    });
-  };
-
-
+    setForm({ ...row, personaFisica: persone });
+  };*/
+  
 
   // Rimuove una persona
   const rimuoviPersona = (index) => {
@@ -352,20 +428,38 @@ const handleChange = async (e) => {
             </Box>
         </AccordionDetails>
     </Accordion>
-
-      <PersonaFisica
-        form={form}
-        setForm={setForm}      
-        tipologiche={tipologiche}
-        handleChange={handleChange}
-      />   
-
-      <PersonaGiuridica
-        form={form}
-        setForm={setForm}      
-        tipologiche={tipologiche}
-        handleChange={handleChange}
-      />   
+      <Button
+        variant="contained"
+        onClick={aggiungiPersonaFisica}
+        sx={{ mb: 2 }}
+      >
+        Aggiungi persona
+      </Button>
+      {row?.personaFisica?.map((persona, index) => (
+        <PersonaFisica
+          key={persona.id}
+          persona={persona}
+          numReclamo={row.NumReclamo}
+          setRow={setSelectedRow}
+          tipologiche={tipologiche}
+        />
+        ))}
+      <Button
+        variant="contained"
+        onClick={aggiungiPersonaGiuridica}
+        sx={{ mb: 2 }}
+      >
+        Aggiungi Azienda
+      </Button>
+      {row?.personaGiuridica?.map((persona, index) => (
+        <PersonaGiuridica
+          key={persona.id}
+          persona={persona}
+          numReclamo={row.NumReclamo}
+          setRow={setSelectedRow}
+          tipologiche={tipologiche}
+        />
+        ))}
 
       <DettaglioReclamo
         row={row}

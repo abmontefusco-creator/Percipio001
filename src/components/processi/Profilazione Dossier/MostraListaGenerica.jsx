@@ -14,6 +14,8 @@ import {
 import useReclamoAutoSave from "../../../hooks/useReclamoAutoSave";
 import AutoSaveCheckbox from "../../pageComponents/AutoSaveCheckbox";
 import AutoSaveFileUpload from "../../pageComponents/AutoSaveFileUpload";
+import Button from "@mui/material/Button";
+import { supabase } from "../../../services/supabaseClient";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -44,7 +46,7 @@ const MostraLista = ({ numReclamo, nomeArray, nomeQuery }) => {
       try {
         setLoading(true);
         const url = `${API_URL}/reclami/${nomeQuery}/${numReclamo}`;
-        console.log('url ' + url);
+        //console.log('url ' + url);
         
         const response = await fetch(url);
         if (!response.ok) {
@@ -199,6 +201,32 @@ const MostraLista = ({ numReclamo, nomeArray, nomeQuery }) => {
               `${nomeArray}.${rowKey}.presente`
             ];
 
+          const handleDownload = async (upload) => {
+            try {
+              const { data, error } = await supabase.storage
+                .from("reclami")
+                .download(upload.path);
+
+              if (error) {
+                console.error("Errore download:", error);
+                return;
+              }
+
+              const url = URL.createObjectURL(data);
+
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = upload.name;
+
+              document.body.appendChild(a);
+              a.click();
+              a.remove();
+
+              URL.revokeObjectURL(url);
+            } catch (err) {
+              console.error("Errore download:", err);
+            }
+          };        
 
           return (
             <TableRow key={rowKey || index}>
@@ -209,21 +237,26 @@ const MostraLista = ({ numReclamo, nomeArray, nomeQuery }) => {
                   return null;
                 }
 
-
                 if (colonna.startsWith("upload")) {
-
                   return (
                     <TableCell key={colonna}>
-
-                      <AutoSaveFileUpload
-                        numReclamo={item.NumReclamo}
-                        rowId={item._id}
-                      />
-
+                      {item.upload ? (
+                        <Button
+                          size="small"
+                          variant="text"
+                          onClick={() => handleDownload(item.upload)}
+                        >
+                          📎 {item.upload.name}
+                        </Button>
+                      ) : (
+                        <AutoSaveFileUpload
+                          numReclamo={item.NumReclamo}
+                          rowId={item._id}
+                        />
+                      )}
                     </TableCell>
                   );
                 }
-
 
                 if (colonna === "presente") {
 

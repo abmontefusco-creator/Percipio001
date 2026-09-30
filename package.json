@@ -18,6 +18,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@jspreadsheet/react": "^12.9.0",
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
     "@mui/x-data-grid": "^8.27.0",
@@ -26,6 +27,8 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "i18next": "^23.0.1",
+    "jspreadsheet": "^12.9.1",
+    "jsuites": "^6.4.3",
     "lucide-react": "^0.278.0",
     "mongoose": "^8.18.3",
     "react": "^18.3.1",
@@ -33,7 +36,8 @@
     "react-i18next": "^13.0.0",
     "react-router-dom": "^7.13.0",
     "recharts": "^2.6.2",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^5.0.4",

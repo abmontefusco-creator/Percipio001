@@ -34,6 +34,12 @@ export default function LeftDrawerMenu({ open, onClose, onNavigate }) {
       <Divider />
       <List>
         <ListItem disablePadding>
+          <ListItemButton onClick={() => onNavigate("excel")}>
+            <ListItemText primary="Excel" />
+          </ListItemButton>
+        </ListItem>
+
+        <ListItem disablePadding>
           <ListItemButton onClick={() => onNavigate("ricerca")}>
             <ListItemText primary="Ricerca Claim" />
           </ListItemButton>

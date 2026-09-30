@@ -9,6 +9,8 @@ import Typography from "@mui/material/Typography";
 import LeftDrawerMenu from "./components/LeftDrawerMenu";
 import GestioneProcesso from './components/processi/GestioneProcesso';
 import Link from "@mui/material/Link";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import ExcelTest from "./components/excel/ExcelTest";
 
 function InserimentoClaim() { 
   return <div>Inserimento Claim</div>; 
@@ -32,6 +34,8 @@ export default function App() {
 
   const renderPage = () => {
     switch (activePage) {
+      case "excel":
+        return <ExcelTest />;
       case "ricerca":
         return <RicercaPage setActivePage={setActivePage} setSelectedRow={setSelectedRow} />;
       case "contatti":
@@ -41,6 +45,7 @@ export default function App() {
           <GestioneProcesso
             row={selectedRow}
             setSelectedRow={setSelectedRow}
+            setActivePage={setActivePage}
           />
         );
       case "gestione-claim":
@@ -48,6 +53,7 @@ export default function App() {
           <ClaimForm
             row={selectedRow}
             setSelectedRow={setSelectedRow}
+            setActivePage={setActivePage}
           />
         );
       default:
@@ -70,17 +76,38 @@ export default function App() {
           </IconButton>
           <Typography variant="h6">
             {selectedRow?.NumReclamo ? (
-              <Typography
-                component="span"
-                onClick={() => setActivePage("gestione-claim")}
-                sx={{
-                  cursor: "pointer",
-                  textDecoration: "underline",
-                  display: "inline",
-                }}
-              >
-                Gestione Claim Numero Reclamo - {selectedRow.NumReclamo}
-              </Typography>
+              <>
+                <Typography
+                  component="span"
+                  onClick={() => setActivePage("gestione-claim")}
+                  sx={{
+                    cursor: "pointer",
+                    textDecoration: "underline",
+                    display: "inline",
+                  }}
+                >
+                  Gestione Claim Numero Reclamo - {selectedRow.NumReclamo}
+                </Typography>
+
+                <Typography
+                  component="span"
+                  onClick={() => setActivePage("gestione-processo")}
+                  sx={{
+                    cursor: "pointer",
+                    display: "inline",
+                    ml: 2,
+                  }}
+                >
+                  <VisibilityIcon
+                    sx={{
+                      cursor: "pointer",
+                      verticalAlign: "middle",
+                      mr: 1,
+                    }}
+                  />
+                  Processo Reclamo
+                </Typography>
+              </>
             ) : (
               "Gestione Nuovo Claim"
             )}
