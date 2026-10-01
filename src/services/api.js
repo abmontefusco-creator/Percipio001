@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL;
+export const API_URL = import.meta.env.VITE_API_URL;
 
 export async function fetchTenantData(tenantId) {
   //const response = await fetch(`https://percipio001.onrender.com/api/data/${tenantId}`);

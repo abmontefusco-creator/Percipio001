@@ -11,6 +11,7 @@ import GestioneProcesso from './components/processi/GestioneProcesso';
 import Link from "@mui/material/Link";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ExcelTest from "./components/excel/ExcelTest";
+import GestioneDocumentiExcel from "./components/GestioneDocumentiExcel";
 
 function InserimentoClaim() { 
   return <div>Inserimento Claim</div>; 
@@ -35,7 +36,7 @@ export default function App() {
   const renderPage = () => {
     switch (activePage) {
       case "excel":
-        return <ExcelTest />;
+        return <GestioneDocumentiExcel/>;
       case "ricerca":
         return <RicercaPage setActivePage={setActivePage} setSelectedRow={setSelectedRow} />;
       case "contatti":

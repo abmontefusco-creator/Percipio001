@@ -6,6 +6,7 @@ import Tipologiche from "./models/tipologicheModel.js";
 import { ObjectId } from "mongodb";
 import File from "./models/fileModel.js";
 import {getViewModel} from "./models/createViewModel.js";
+import DocumentoConfigurazione from "./models/documentoConfigurazioneModel.js";
 
 console.log("✅ SERVER JS IN ESECUZIONE DA:", process.cwd());
 
@@ -22,6 +23,254 @@ mongoose.connect("mongodb+srv://ue_amontefusco:AQUILOTTO@clusterm2.5cykqpk.mongo
 //console.log('Checkpoint'); // per vedere se il server arriva lì
 debugger;
 
+app.delete(
+  "/api/documenti-configurazione/:id",
+  async (req, res) => {
+
+    try {
+
+      const { id } = req.params;
+
+      console.log(
+        "DELETE DOCUMENTO CONFIGURAZIONE:",
+        id
+      );
+
+      // Verifica che l'ID sia valido
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({
+          ok: false,
+          error: "ID documento non valido"
+        });
+      }
+
+      const documento =
+        await DocumentoConfigurazione.findById(id);
+
+      if (!documento) {
+
+        return res.status(404).json({
+          ok: false,
+          error: "Documento non trovato"
+        });
+
+      }
+
+      /*
+       * Per ora eliminiamo il documento Mongo.
+       *
+       * Successivamente aggiungeremo anche
+       * l'eliminazione del file da Supabase.
+       */
+
+      await DocumentoConfigurazione.deleteOne({
+        _id: documento._id
+      });
+
+      console.log(
+        "DOCUMENTO ELIMINATO:",
+        documento.nomeFile
+      );
+
+      return res.json({
+        ok: true,
+        deletedId: id,
+        nomeFile: documento.nomeFile
+      });
+
+    } catch (error) {
+
+      console.error(
+        "ERRORE DELETE DOCUMENTO CONFIGURAZIONE:",
+        error
+      );
+
+      return res.status(500).json({
+        ok: false,
+        error: error.message
+      });
+    }
+  }
+);
+
+app.post("/api/documenti-configurazione",async (req, res) => {
+    try {
+      console.log(
+        "===== POST DOCUMENTO CONFIGURAZIONE ====="
+      );
+
+      console.log("BODY:",
+        JSON.stringify(req.body, null, 2)
+      );
+
+
+      const {
+        nomeFile,
+        tipoDocumento,
+        reclamo,
+        valido,
+        path,
+        fullPath,
+        versione
+      } = req.body;
+
+
+      /*
+       * =====================================================
+       * VALIDAZIONE
+       * =====================================================
+       */
+
+      if (!nomeFile) {
+        return res.status(400).json({
+          ok: false,
+          error: "nomeFile obbligatorio"
+        });
+      }
+
+
+      if (!tipoDocumento) {
+        return res.status(400).json({
+          ok: false,
+          error: "tipoDocumento obbligatorio"
+        });
+      }
+
+
+      const tipiValidi = [
+        "TIPOLOGIE",
+        "ARERA",
+        "LETTERE",
+        "TEMPLATE_FINITE"
+      ];
+
+
+      if (!tipiValidi.includes(tipoDocumento)) {
+        return res.status(400).json({
+          ok: false,
+          error:
+            `Tipo documento non valido: ${tipoDocumento}`
+        });
+      }
+
+
+      /*
+       * =====================================================
+       * CREA DOCUMENTO
+       * =====================================================
+       */
+
+      const nuovoDocumento =
+        new DocumentoConfigurazione({
+
+          nomeFile,
+
+          tipoDocumento,
+
+          reclamo:
+            reclamo !== undefined
+              ? Number(reclamo)
+              : 0,
+
+          valido:
+            valido === true,
+
+          path,
+
+          fullPath,
+
+          versione:
+            versione !== undefined
+              ? Number(versione)
+              : 1
+
+        });
+
+
+      const documento =
+        await nuovoDocumento.save();
+
+
+      console.log(
+        "DOCUMENTO CONFIGURAZIONE SALVATO:",
+        documento
+      );
+
+
+      res.status(201).json({
+
+        ok: true,
+
+        documento
+
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "ERRORE POST DOCUMENTO CONFIGURAZIONE:",
+        error
+      );
+
+
+      res.status(500).json({
+
+        ok: false,
+
+        error: error.message
+
+      });
+
+    }
+
+  }
+);
+
+app.get("/api/documenti-configurazione", async (req, res) => {
+  try {
+    const {
+      reclamo,
+      tipoDocumento
+    } = req.query;
+
+    const filtro = {};
+
+    if (reclamo !== undefined) {
+      filtro.reclamo = Number(reclamo);
+    }
+
+    if (tipoDocumento) {
+      filtro.tipoDocumento = tipoDocumento;
+    }
+
+    console.log(
+      "GET DOCUMENTI CONFIGURAZIONE:",
+      filtro
+    );
+
+    const documenti =
+      await DocumentoConfigurazione
+        .find(filtro)
+        .sort({
+          createdAt: -1
+        })
+        .lean();
+
+    res.json(documenti);
+
+  } catch (error) {
+
+    console.error(
+      "ERRORE RECUPERO DOCUMENTI CONFIGURAZIONE:",
+      error
+    );
+
+    res.status(500).json({
+      error: error.message
+    });
+  }
+});
     
 app.patch("/api/reclami/:NumReclamo", async (req, res) => {
 
