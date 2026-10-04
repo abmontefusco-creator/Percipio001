@@ -7,7 +7,7 @@ import { ObjectId } from "mongodb";
 import File from "./models/fileModel.js";
 import {getViewModel} from "./models/createViewModel.js";
 import DocumentoConfigurazione from "./models/documentoConfigurazioneModel.js";
-import { inviaMail } from "./services/emailService.js";
+import { inviaMail } from "../src/services/emailService.js";
 
 console.log("✅ SERVER JS IN ESECUZIONE DA:", process.cwd());
 
