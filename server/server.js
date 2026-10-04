@@ -7,6 +7,7 @@ import { ObjectId } from "mongodb";
 import File from "./models/fileModel.js";
 import {getViewModel} from "./models/createViewModel.js";
 import DocumentoConfigurazione from "./models/documentoConfigurazioneModel.js";
+import { inviaMail } from "./services/emailService.js";
 
 console.log("✅ SERVER JS IN ESECUZIONE DA:", process.cwd());
 
@@ -22,6 +23,51 @@ mongoose.connect("mongodb+srv://ue_amontefusco:AQUILOTTO@clusterm2.5cykqpk.mongo
 
 //console.log('Checkpoint'); // per vedere se il server arriva lì
 debugger;
+
+app.post("/api/mail/invia", async (req, res) => {
+    try {
+        const {
+            to,
+            cc,
+            subject,
+            text,
+            html
+        } = req.body;
+
+        if (!to) {
+            return res.status(400).json({
+                error: "Destinatario obbligatorio"
+            });
+        }
+
+        if (!subject) {
+            return res.status(400).json({
+                error: "Oggetto obbligatorio"
+            });
+        }
+
+        const risultato = await inviaMail({
+            to,
+            cc,
+            subject,
+            text,
+            html
+        });
+
+        res.json({
+            ok: true,
+            messageId: risultato.messageId
+        });
+
+    } catch (error) {
+        console.error("ERRORE INVIO MAIL:", error);
+
+        res.status(500).json({
+            ok: false,
+            error: error.message
+        });
+    }
+});
 
 app.delete(
   "/api/documenti-configurazione/:id",

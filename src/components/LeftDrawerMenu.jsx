@@ -34,14 +34,13 @@ export default function LeftDrawerMenu({ open, onClose, onNavigate }) {
       <Divider />
       <List>
         <ListItem disablePadding>
-          <ListItemButton onClick={() => onNavigate("excel")}>
-            <ListItemText primary="Excel" />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem disablePadding>
           <ListItemButton onClick={() => onNavigate("ricerca")}>
             <ListItemText primary="Ricerca Claim" />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton onClick={() => onNavigate("configurazioneSistema")}>
+            <ListItemText primary="Configurazione Sistema" />
           </ListItemButton>
         </ListItem>
 
@@ -56,6 +55,12 @@ export default function LeftDrawerMenu({ open, onClose, onNavigate }) {
             <ListItemText primary="Contatti" />
           </ListItemButton>
         </ListItem>
+        <ListItem disablePadding>
+          <ListItemButton onClick={() => onNavigate("Mail")}>
+            <ListItemText primary="Test Mail" />
+          </ListItemButton>
+        </ListItem>
+        
       </List>
     </Drawer>
   );

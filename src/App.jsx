@@ -12,6 +12,14 @@ import Link from "@mui/material/Link";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ExcelTest from "./components/excel/ExcelTest";
 import GestioneDocumentiExcel from "./components/GestioneDocumentiExcel";
+import GestioneMail from "./components/GestioneMail";
+import {
+  Show,
+  SignIn,
+  SignInButton,
+  UserButton
+} from "@clerk/react";
+
 
 function InserimentoClaim() { 
   return <div>Inserimento Claim</div>; 
@@ -35,7 +43,9 @@ export default function App() {
 
   const renderPage = () => {
     switch (activePage) {
-      case "excel":
+      case "Mail":
+        return <GestioneMail/>;
+      case "configurazioneSistema":
         return <GestioneDocumentiExcel/>;
       case "ricerca":
         return <RicercaPage setActivePage={setActivePage} setSelectedRow={setSelectedRow} />;
@@ -58,13 +68,19 @@ export default function App() {
           />
         );
       default:
-        return <ClaimForm />;
+        return <RicercaPage setActivePage={setActivePage} setSelectedRow={setSelectedRow} />;
     }
   };
 //console.log("selectedRow:", selectedRow);
 //console.log("NumReclamo:", selectedRow?.NumReclamo);
   return (
-    <>
+      <>
+    <Show when="signed-out">
+      <SignIn />
+    </Show>
+
+    <Show when="signed-in">
+
       <AppBar position="fixed">
         <Toolbar>
           <IconButton
@@ -75,7 +91,8 @@ export default function App() {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6">
+
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
             {selectedRow?.NumReclamo ? (
               <>
                 <Typography
@@ -113,14 +130,35 @@ export default function App() {
               "Gestione Nuovo Claim"
             )}
           </Typography>
-        </Toolbar>
+
+          <Show when="signed-out">
+            <SignInButton mode="modal">
+              <button
+                style={{
+                  background: "transparent",
+                  border: "1px solid white",
+                  color: "white",
+                  padding: "6px 14px",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                }}
+              >
+                Accedi
+              </button>
+            </SignInButton>
+          </Show>
+
+          <Show when="signed-in">
+            <UserButton />
+          </Show>
+        </Toolbar>      
       </AppBar>
 
-      <LeftDrawerMenu
-        open={open}
-        onClose={() => setOpen(false)}
-        onNavigate={handleNavigate}
-      />
+        <LeftDrawerMenu
+          open={open}
+          onClose={() => setOpen(false)}
+          onNavigate={handleNavigate}
+        />
         <div className="flex h-screen bg-gray-100 dark:bg-gray-900 font-sans">
           <main className="flex-1 flex flex-col overflow-hidden">
             <div className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-100 dark:bg-gray-800">
@@ -128,6 +166,7 @@ export default function App() {
             </div>
           </main>
         </div>
-            </>
+    </Show>
+  </>
   );
 }
